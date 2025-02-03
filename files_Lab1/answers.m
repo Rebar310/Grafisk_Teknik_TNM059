@@ -103,7 +103,7 @@ imshow(mygray);
 imwrite(mygray, 'mygray.png');
 
 
-%% 6.
+%% 6. -----------------------------------------------
 
 % Sampla ner mygray från uppgift 5.1
 b61 = mygray(1:2:end, 1:2:end);
@@ -163,7 +163,7 @@ subplot(2, 2, 4);
 imshow(mygray);
 title('Originalbild');
 
-%% 6.4
+%% 6.4 ----------------------------------------------
 
 % Läs in färgbilden och normalisera till intervallet [0, 1]
 mycolorimage = imread('Butterfly.tif');
@@ -183,7 +183,7 @@ subplot(1, 2, 2);
 imshow(b64_up);
 title('Rekonstruerad bild (b64)');
 
-% 6.5
+% 6.5 ----------------------------------------------
 
 % Separera de tre kanalerna (R, G, B)
 R = mycolorimage(:, :, 1);
@@ -211,5 +211,121 @@ subplot(1, 2, 2);
 imshow(b65);
 title('Rekonstruerad bild (b65)');
 
-% 6.6
+% 6.6 ------------------------------------------------------------
+% För en färgbild med storleken 4000 x 2000 pixlar och tre kanaler (R, G, B), där varje pixel är lagrad i uint8-format (1 byte per kanal), beräknas det totala minnet som:
+% 4000 x 2000 pixlar , färgbild
+% 4000 x 2000 x 3 = 24 000 000 bytes = 24 MB
+
+% När vi samplar ner två av de tre kanalerna (R och B) till hälften av storleken men behåller G-kanalen i full upplösning, beräknar vi minnet för varje kanal:
+% G-kanalen: 4000 x 2000 pixlar x 1 byte = 8,000,000 bytes
+% R- och B-kanalerna (samplade ner till hälften i varje led): 2000 x 1000 pixlar x 1 byte = 2,000,000 bytes per kanal
+% 8,000,000+2,000,000+2,000,000=12,000,000bytes = 12 MB
+
+% 6.7 -----------------------------------------------------
+
+% Separera de tre kanalerna (R, G, B)
+R = mycolorimage(:, :, 1);
+G = mycolorimage(:, :, 2);
+B = mycolorimage(:, :, 3);
+
+
+% Sampla ner R och G med faktor 0.5
+R3 = imresize(R, 0.5, 'nearest');
+G3 = imresize(G, 0.5, 'nearest');
+
+% Sampla upp R3 och G3 med faktor 2 för att få tillbaka originalstorleken
+R3 = imresize(R3, 2, 'nearest');
+G3 = imresize(G3, 2, 'nearest');
+
+% Återskapa den nyskapade bilden
+b67 = cat(3, R3, G3, B);
+
+% Visa originalbilden (mycolorimage), b65 och b67
+figure;
+subplot(1, 3, 1);
+imshow(mycolorimage);
+title('Originalbild (mycolorimage)');
+
+subplot(1, 3, 2);
+imshow(b65);
+title('Rekonstruerad bild (b65)');
+
+subplot(1, 3, 3);
+imshow(b67);
+title('Rekonstruerad bild (b67)');
+
+% I b65 behålls G-kanalen i originalstorlek, medan R och B samplas ner och upp. 
+% Eftersom G-kanalen ofta bär mycket av detaljinformationen i bilden, är det att föredra att bevara den intakt.
+
+% I b67, däremot, samplas både R och G-kanalerna ner och upp, medan endast B-kanalen behålls. 
+% Eftersom G-kanalen innehåller mycket av detaljrikedomen i många bilder (särskilt i bilder med mycket vegetation), 
+% förloras viktiga detaljer i b67, vilket gör att den inte liknar originalbilden lika mycket som b65 gör
+
+% 6.8 ---------------------------------------------------
+
+% Separera de tre kanalerna R, G, och B från mycolorimage
+R = mycolorimage(:, :, 1);
+G = mycolorimage(:, :, 2);
+B = mycolorimage(:, :, 3);
+
+% Skapa de tre nya bilderna
+bild1 = R + G + B;         % R + G + B
+bild2 = R - G;             % R - G
+bild3 = R + G - 2*B;       % R + G - 2B
+
+% Sampla ner bild2 och bild3 med faktor 0.5
+bild2_down = imresize(bild2, 0.5, 'nearest');
+bild3_down = imresize(bild3, 0.5, 'nearest');
+
+% Sampla upp bild2 och bild3 med faktor 2 för att återställa till originalstorlek
+bild2_up = imresize(bild2_down, 2, 'nearest');
+bild3_up = imresize(bild3_down, 2, 'nearest');
+
+% Återskapa R, G och B-kanalerna
+R_new = bild1 - bild2_up + bild3_up;
+G_new = bild1 - bild2_up + bild3_up;
+B_new = bild1 - bild3_up;
+
+% Kombinera de återställda R, G och B-kanalerna för att skapa den nya färgbilden
+b68 = cat(3, R_new, G_new, B_new);
+
+% Visa bilderna sida vid sida
+figure;
+subplot(1, 3, 1);
+imshow(mycolorimage);
+title('Originalbild (mycolorimage)');
+
+subplot(1, 3, 2);
+imshow(b65);
+title('Rekonstruerad bild (b65)');
+
+subplot(1, 3, 3);
+imshow(b68);
+title('Rekonstruerad bild (b68)');
+
+
+% 6.9 -----------------------------------------------------
+
+% Minne för B1 _________________________
+% Originalbilden 𝐵1 har storleken 4000 × 12000 pixlar och består av tre kanaler (RGB),
+% där varje pixel i varje kanal tar 8 bitar (1 byte).
+% Totalt antalet pixlar = 4000 x 12000 = 48 000 000 bytes
+% Totalt minne för B1 = 48 000 000 000 x 3 = 144 000 000 bytes = 144 MB
+
+% Minne för B2 _______________________
+% För bild B2, som är nedsamplad med faktor 0.25 (det vill säga att bildens storlek blir 
+% 4000×12000×0.25=1000×3000 pixlar), gäller följande:
+% Efter nedsampling:
+% 4000 x 0.25 = 1000 rader
+% 12000 x 0.25 = 3000 kolumner
+% Totalt antalet pixlar =  1000 x 3000 = 3 000 000 pixlar
+% Totalt minne = 3 000 000 x 3 = 9 000 000 bytes = 9 MB
+
+% Minne för B3 _________________________
+% Eftersom bilineär interpolation inte påverkar mängden data som lagras (den ändrar bara interpoleringen mellan pixlar), 
+% kommer storleken på B3 vara samma som för B2.
+% Totalt minne för B3 = 9 000 000 bytes = 9 MB
+
+
+
 
