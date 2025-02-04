@@ -222,7 +222,7 @@ bild2_up = imresize(bild2_down, 2, 'nearest');
 bild3_up = imresize(bild3_down, 2, 'nearest');
 
 % Återskapa R, G och B-kanalerna
-R_new = (bild1/3) + (bild2_up/2) + (bild3_up/6);
+R_new = (bild1/3) - (bild2_up/2) + (bild3_up/6);
 G_new = (bild1/3) - (bild2_up/2) + (bild3_up/6);
 B_new = (bild1/3) - (bild3_up/3);
 
