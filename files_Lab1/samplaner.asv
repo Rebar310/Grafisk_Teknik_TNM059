@@ -56,6 +56,7 @@ function ut=samplaner(in)
 [rad, kolumn] = size(in); % rad and kolumn are supposed to be the number of rows
     % and columns in the original image.
 % 
+% Detta nedanför kanske ska bort
 % Vi vet att storleken på den nedsamplade bilden kommer vara halva storleken i varje led
 ut = zeros(floor(rad/2), floor(kolumn/2)); 
 %% Create counters
