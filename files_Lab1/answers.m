@@ -117,6 +117,7 @@ mygray = double(mygray) / 255;
 % Använd samplaner-funktionen för att sampla ner bilden
 b62 = samplaner(mygray);
 
+
 imwrite(b61, 'b61_image.png');  % Spara som PNG-bild
 imwrite(b62, 'b62_image.png');  % Spara som PNG-bild
 
