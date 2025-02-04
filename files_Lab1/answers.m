@@ -7,7 +7,7 @@ b = uint8(a);  % Bytes 1, class uint8
 
 % a/4 = 1.2500
 % b/4 = 1       avrunder till närmaste heltal vilket blir 1
-% b/12 = 0      eftersom b/12 egentligen blir 0.333 så avrundar den till 0
+% b/12 = 0      eftersom b/12 egentligen blir 0.43 så avrundar den till 0
 
 % svaret avrundas till närmaste heltal om det inte är i exakt binärt format
 
@@ -224,9 +224,9 @@ title('Rekonstruerad bild (b65)');
 % 6.7 -----------------------------------------------------
 
 % Separera de tre kanalerna (R, G, B)
-R = mycolorimage(:, :, 1);
-G = mycolorimage(:, :, 2);
-B = mycolorimage(:, :, 3);
+%R = mycolorimage(:, :, 1);
+%G = mycolorimage(:, :, 2);
+%B = mycolorimage(:, :, 3);
 
 
 % Sampla ner R och G med faktor 0.5
@@ -264,9 +264,9 @@ title('Rekonstruerad bild (b67)');
 % 6.8 ---------------------------------------------------
 
 % Separera de tre kanalerna R, G, och B från mycolorimage
-R = mycolorimage(:, :, 1);
-G = mycolorimage(:, :, 2);
-B = mycolorimage(:, :, 3);
+%R = mycolorimage(:, :, 1);
+%G = mycolorimage(:, :, 2);
+%B = mycolorimage(:, :, 3);
 
 % Skapa de tre nya bilderna
 bild1 = R + G + B;         % R + G + B
@@ -282,9 +282,9 @@ bild2_up = imresize(bild2_down, 2, 'nearest');
 bild3_up = imresize(bild3_down, 2, 'nearest');
 
 % Återskapa R, G och B-kanalerna
-R_new = bild1 - bild2_up + bild3_up;
-G_new = bild1 - bild2_up + bild3_up;
-B_new = bild1 - bild3_up;
+R_new = (bild1/3) - (bild2_up/2) + (bild3_up/6);
+G_new = (bild1/3) - (bild2_up/2) + (bild3_up/6);
+B_new = (bild1/3) - (bild3_up/3);
 
 % Kombinera de återställda R, G och B-kanalerna för att skapa den nya färgbilden
 b68 = cat(3, R_new, G_new, B_new);
