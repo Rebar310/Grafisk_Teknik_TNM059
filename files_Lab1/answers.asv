@@ -103,7 +103,7 @@ imshow(mygray);
 imwrite(mygray, 'mygray.png');
 
 
-% 6. -----------------------------------------------
+%% 6. -----------------------------------------------
 
 % Sampla ner mygray från uppgift 5.1
 b61 = mygray(1:2:end, 1:2:end);
@@ -145,8 +145,6 @@ b63_cubic = imresize(b61, size(mygray), 'bicubic');
 % beräkning för att uppskatta pixelvärden.
 
 imwrite(b63_nearest, 'b63_nearest_image.png');  % Spara som PNG-bild
-imwrite(b63_linear, 'b63_linear_image.png');  % Spara som PNG-bild
-imwrite(b63_cubic, 'b63_cubic_image.png');  % Spara som PNG-bild
 
 
 %% 6.4 ----------------------------------------------
