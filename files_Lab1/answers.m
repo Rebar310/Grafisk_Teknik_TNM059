@@ -117,20 +117,9 @@ mygray = double(mygray) / 255;
 % Använd samplaner-funktionen för att sampla ner bilden
 b62 = samplaner(mygray);
 
-% Visa den ursprungliga och den nedsamplade bilden
-figure;
-subplot(1,2,1);
-imshow(mygray);
-title('Originalbild (mygray)');
+imwrite(b61, 'b61_image.png');  % Spara som PNG-bild
+imwrite(b62, 'b62_image.png');  % Spara som PNG-bild
 
-subplot(1,2,2);
-imshow(b62);
-title('Nedsamplad bild (b62)');
-
-% Storlekskontroll
-size_b1 = size(b61)
-size_original = size(mygray)
-size_downsampled = size(b62)
 
 % 6.3
 b63_nearest = imresize(b61, size(mygray), 'nearest');
