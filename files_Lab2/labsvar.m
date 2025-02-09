@@ -76,13 +76,13 @@ imwrite(b13, 'b13.tif', 'Resolution', 150);
 tr_linjeraster = [  1  2  3  4;
                     5  6  7  8;
                     9 10 11 12;
-                   13 14 15 16] / 16; % Normerad till [0,1]
+                   13 14 15 16] / 17; % Normerad till [0,1]
 
 % Spiralraster innebär att tröskelvärdena följer en spiralformad ordning:
 tr_spiralraster = [  6  7  8  9;
                       5  1  2 10;
                       4 12  3 11;
-                     16 15 14 13] / 16; % Normerad till [0,1]
+                     16 15 14 13] / 17; % Normerad till [0,1]
 
 % Rastera bilden med de nya tröskelmatriserna
 b14_linjeraster = troskel(I, tr_linjeraster);
