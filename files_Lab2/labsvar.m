@@ -114,18 +114,22 @@ imwrite(b14_spiralraster, 'b14_spiralraster.tif', 'Resolution', 150);
 % Genom att räkna antalet unika tröskelvärden och addera ett får man det totala antalet grånivåer som matrisen kan återge. 
 % Ju fler unika värden tröskelmatrisen har, desto fler nyanser av grått kan rasterbilden återge, vilket påverkar bildens detaljrikedom och tonalitet.
 
-% 2.1 ---------------------------------------------------------------------
+%% 2.1 ---------------------------------------------------------------------
 
-% bilden I har laddats in högre upp
+I = imread('kvarn.tif'); % Läs in bilden
+I = double(I) / 255; % Normera bilden till intervallet [0,1]
 
 b21 = tabellrast(I);
 figure, imshow(b21), title('Tabellrastrering med tabellrast');
 imwrite(b21, 'b21.tif', 'Resolution', 150);
 
 num_gray_levels = numel(unique(b21));
-disp(['Tabellrastreringen representerar ', num2str(num_gray_levels), ' grånivåer.']);
+disp(['Tabellrastreringen b21 representerar ', num2str(num_gray_levels), ' grånivåer.']);
 
-% 2.2 ------------------------------------------------------------------
+%% 2.2 ------------------------------------------------------------------
+
+I = imread('kvarn.tif'); % Läs in bilden
+I = double(I) / 255; % Normera bilden till intervallet [0,1]
 
 b22 = tabellrast2(I);
 figure, imshow(b22), title('Tabellrastrering med tabellrast2');
@@ -154,7 +158,7 @@ imwrite(b24, 'b24.tif', 'Resolution', 150);
 
 % kolla grånivåer ( 16 olika?? ) 
 num_gray_levels = numel(unique(b24));
-disp(['Tabellrastreringen b4 representerar  ', num2str(num_gray_levels), ' grånivåer.']);
+disp(['Tabellrastreringen b24 representerar  ', num2str(num_gray_levels), ' grånivåer.']);
 
 % Hur stor blir den nya bilden? (dubbelt)
 [orig_height, orig_width] = size(I);
@@ -210,8 +214,8 @@ I = double(I) / 255; % Normera pixelvärden till [0,1]
 
 % ( denna inte helt fungerande ännu)
 
-filter1 = [0 1]; % Felet sprids endast åt höger
-filter2 = [0 0.5; 0.5 0]; % Felet sprids åt höger och nedåt
+filter1 = [0 0 1; 0 0 0]; % Felet sprids endast åt höger
+filter2 = [0 0 0.5; 0.5 0 0]; % Felet sprids åt höger och nedåt
 
 b34_1 = errordif(I, filter1); % Rastrering med filter 1
 b34_2 = errordif(I, filter2); % Rastrering med filter 2
