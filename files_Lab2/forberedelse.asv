@@ -36,3 +36,7 @@ disp(B1);
 
 % 2.b
 
+% Skapa en 3 × 3 rastertabell med 10 nivåer
+T = [1, 2, 5, 6;
+     3, 4, 7, 8;
+     9 , 8, 9] / 10; % Normalisering för 10 nivåer
