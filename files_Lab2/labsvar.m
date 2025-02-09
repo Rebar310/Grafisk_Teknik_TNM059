@@ -311,6 +311,34 @@ imwrite(qns_b11, 'qns_b11.tif', 'Resolution', 150);
 imwrite(qns_b31, 'qns_b31.tif', 'Resolution', 150);
 imwrite(qns_b40, 'qns_b40.tif', 'Resolution', 150);
 
+%% Del 3 Färgraster 
+% test 1
 
+I = imread('musicians.tif'); % Läs in färgbilden
+I = double(I) / 255; % Normalisera till [0,1]
+
+b_errordif = fargraster(I, 'errordif'); % Rastrering med felspridning
+b_imcdp = fargraster(I, 'imcdp'); % Rastrering med IMCDP
+
+% Visa resultaten
+figure, imshow(b_errordif), title('Färgrastrering med felspridning');
+figure, imshow(b_imcdp), title('Färgrastrering med IMCDP');
+
+% Spara resultaten
+imwrite(b_errordif, 'musicians_errordif.tif', 'Resolution', 150);
+imwrite(b_imcdp, 'musicians_imcdp.tif', 'Resolution', 150);
+
+%% test 2
+I = imread('Butterfly.tif');
+I = double(I) / 255; % Normalisera till [0,1]
+
+b_errordif = fargraster(I, 'errordif');
+b_imcdp = fargraster(I, 'imcdp');
+
+figure, imshow(b_errordif), title('Butterfly - Felspridning');
+figure, imshow(b_imcdp), title('Butterfly - IMCDP');
+
+imwrite(b_errordif, 'Butterfly_errordif.tif', 'Resolution', 150);
+imwrite(b_imcdp, 'Butterfly_imcdp.tif', 'Resolution', 150);
 
 
