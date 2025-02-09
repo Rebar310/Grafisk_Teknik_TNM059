@@ -5,7 +5,6 @@ I = imread('kvarn.tif'); % Läs in bilden
 I = double(I) / 255; % Normera bilden till intervallet [0,1]
 
 b11 = I >= 0.5;
-imshow(b11); % Visa resultatet
 imwrite(b11, 'b11.tif', 'Resolution', 150);
 
 % Eftersom vi har en binär bild där varje pixel endast kan 
@@ -19,8 +18,6 @@ disp(tr2); % Visa tröskelmatris 2
 
 num_gray_levels_tr1 = numel(unique(tr1));
 num_gray_levels_tr2 = numel(unique(tr2));
-disp(['Tr1 representerar ', num2str(num_gray_levels_tr1), ' grånivåer.']);
-disp(['Tr2 representerar ', num2str(num_gray_levels_tr2), ' grånivåer.']);
 
 tr1 = tr1 / max(tr1(:)); % Normera tr1
 tr2 = tr2 / max(tr2(:)); % Normera tr2
@@ -31,9 +28,6 @@ I = double(I) / 255; % Normera bilden till intervallet [0,1]
 
 b12_tr1 = troskel(I, tr1);
 b12_tr2 = troskel(I, tr2);
-
-figure, imshow(b12_tr1), title('Rastrerad bild med tr1');
-figure, imshow(b12_tr2), title('Rastrerad bild med tr2');
 
 imwrite(b12_tr1, 'b12_tr1.tif', 'Resolution', 150);
 imwrite(b12_tr2, 'b12_tr2.tif', 'Resolution', 150);
@@ -50,18 +44,9 @@ disp(tr3); % Visa tröskelmatrisen tr3
 
 %räkna gråskalenivåer
 num_gray_levels_tr3 = numel(unique(tr3));
-disp(['Tr3 representerar ', num2str(num_gray_levels_tr3), ' grånivåer.']);
-
-% Jämför tr3 med tr2
-disp('Tr2:');
-disp(tr2);
-
-disp('Tr3:');
-disp(tr3);
 
 tr3 = tr3 / max(tr3(:)); % Normera tr3
 b13 = troskel(I, tr3);
-figure, imshow(b13), title('Rastrerad bild med tr3');
 imwrite(b13, 'b13.tif', 'Resolution', 150);
 
 % Om tr3 har en större matrisstorlek än tr2 → Mindre rasterpunkter och högre detalj.
@@ -87,10 +72,6 @@ tr_spiralraster = [  6  7  8  9;
 % Rastera bilden med de nya tröskelmatriserna
 b14_linjeraster = troskel(I, tr_linjeraster);
 b14_spiralraster = troskel(I, tr_spiralraster);
-
-% visa bilderna
-figure, imshow(b14_linjeraster), title('Linjeraster');
-figure, imshow(b14_spiralraster), title('Spiralraster');
 
 % spara bilderna
 imwrite(b14_linjeraster, 'b14_linjeraster.tif', 'Resolution', 150);
@@ -120,11 +101,9 @@ I = imread('kvarn.tif'); % Läs in bilden
 I = double(I) / 255; % Normera bilden till intervallet [0,1]
 
 b21 = tabellrast(I);
-figure, imshow(b21), title('Tabellrastrering med tabellrast');
 imwrite(b21, 'b21.tif', 'Resolution', 150);
 
 num_gray_levels = numel(unique(b21));
-disp(['Tabellrastreringen b21 representerar ', num2str(num_gray_levels), ' grånivåer.']);
 
 %% 2.2 ------------------------------------------------------------------
 
@@ -132,7 +111,6 @@ I = imread('kvarn.tif'); % Läs in bilden
 I = double(I) / 255; % Normera bilden till intervallet [0,1]
 
 b22 = tabellrast2(I);
-figure, imshow(b22), title('Tabellrastrering med tabellrast2');
 imwrite(b22, 'b22.tif', 'Resolution', 150);
 
 % 2.3 Teori uppgift-----------------------------------------------
@@ -153,18 +131,14 @@ imwrite(b22, 'b22.tif', 'Resolution', 150);
 % 2.4 -----------------------------------------------------------------
 
 b24 = tabellrast3(I);
-figure, imshow(b24), title('Tabellrastrering med tabellrast3');
 imwrite(b24, 'b24.tif', 'Resolution', 150);
 
 % kolla grånivåer ( 16 olika?? ) 
 num_gray_levels = numel(unique(b24));
-disp(['Tabellrastreringen b24 representerar  ', num2str(num_gray_levels), ' grånivåer.']);
 
 % Hur stor blir den nya bilden? (dubbelt)
 [orig_height, orig_width] = size(I);
 [new_height, new_width] = size(b24);
-disp(['Originalbildens storlek: ', num2str(orig_height), ' × ', num2str(orig_width)]);
-disp(['Resultatbildens storlek: ', num2str(new_height), ' × ', num2str(new_width)]);
 
 % Funktionen tabellrast3 använder 2 × 2 omgivningar i inbilden som index till en 4 × 4 rastertabell.
 % Detta innebär att varje ursprunglig pixel blir en 2 × 2 block av pixlar i den rastrerade bilden.
@@ -174,19 +148,13 @@ disp(['Resultatbildens storlek: ', num2str(new_height), ' × ', num2str(new_widt
 % 3.1 ------------------------------------------------
 
 floyd_steinberg = [0 0 7; 3 5 1] / 16; % checka kompendiet 
-
 b31 = errordif(I, floyd_steinberg);
-
-figure, imshow(b31), title('Felspridning med Floyd-Steinberg');
 imwrite(b31, 'b31.tif', 'Resolution', 150);
 
 % 3.2 ----------------------------------------------------
 
 jarvis_judice_ninke = [0 0 0 7 5; 3 5 7 5 3; 1 3 5 3 1] / 48; % checka kompendiet
-
 b32 = errordif(I, jarvis_judice_ninke);
-
-figure, imshow(b32), title('Felspridning med Jarvis, Judice och Ninke');
 imwrite(b32, 'b32.tif', 'Resolution', 150);
 
 % 3.3 (Teori) -------------------------------------------------
@@ -220,9 +188,6 @@ filter2 = [0 0 0.5; 0.5 0 0]; % Felet sprids åt höger och nedåt
 b34_1 = errordif(I, filter1); % Rastrering med filter 1
 b34_2 = errordif(I, filter2); % Rastrering med filter 2
 
-figure, imshow(b34_1), title('Felspridning med ett-element-filter (filter1)');
-figure, imshow(b34_2), title('Felspridning med två-element-filter (filter2)');
-
 imwrite(b34_1, 'b34_1.tif', 'Resolution', 150);
 imwrite(b34_2, 'b34_2.tif', 'Resolution', 150);
 
@@ -254,7 +219,6 @@ I_brus = max(0, min(1, I_brus)); % Se till att inga pixelvärden går utanför [
 floyd_steinberg = [0 0 7; 3 5 1] / 16;
 b36 = errordif(I_brus, floyd_steinberg);
 
-figure, imshow(b36), title(['Felspridning med brus (k = ', num2str(k), ')']);
 imwrite(b36, 'b36.tif', 'Resolution', 150);
 
 % Om k ≈ 0, liknar bilden b31, där artefakter som ormmönster och bandning är tydliga.
@@ -267,14 +231,7 @@ I = imread('kvarn.tif'); % Läs in originalbilden
 I = double(I) / 255; % Normera pixelvärden till [0,1]
 
 b40 = imcdp(I);
-figure, imshow(b40), title('IMCDP-rastrering');
 imwrite(b40, 'b40.tif', 'Resolution', 150);
-
-% jämföörelse mellan b40 och b31
-figure;
-subplot(1,2,1), imshow(b31), title('Floyd-Steinberg (b31)');
-subplot(1,2,2), imshow(b40), title('IMCDP (b40)');
-
 
 % Skärpa
 % IMCDP (b40) bevarar skarpare detaljer och har en mer kontrollerad placering av rasterpunkter.
@@ -309,9 +266,7 @@ snr_b11 = mysnr(I, noise_b11);
 snr_b31 = mysnr(I, noise_b31);
 snr_b40 = mysnr(I, noise_b40);
 
-disp(['SNR för b11 (Tröskling): ', num2str(snr_b11), ' dB']);
-disp(['SNR för b31 (Floyd-Steinberg): ', num2str(snr_b31), ' dB']);
-disp(['SNR för b40 (IMCDP): ', num2str(snr_b40), ' dB']);
+
 
 %% 5.2 ------------------------------------------------
 
@@ -334,9 +289,6 @@ snr_b11_filtered = snr_filter(I, noise_b11);
 snr_b31_filtered = snr_filter(I, noise_b31);
 snr_b40_filtered = snr_filter(I, noise_b40);
 
-disp(['Modifierad SNR för b11 (Tröskling): ', num2str(snr_b11_filtered), ' dB']);
-disp(['Modifierad SNR för b31 (Floyd-Steinberg): ', num2str(snr_b31_filtered), ' dB']);
-disp(['Modifierad SNR för b40 (IMCDP): ', num2str(snr_b40_filtered), ' dB']);
 
 %% 5.3 ----------------------------------------------------
 
@@ -354,10 +306,6 @@ b40 = double(b40) / 255;
 qns_b11 = QNS(I, b11);
 qns_b31 = QNS(I, b31);
 qns_b40 = QNS(I, b40);
-
-figure, imshow(qns_b11), title('QNS för Tröskling (b11)');
-figure, imshow(qns_b31), title('QNS för Floyd-Steinberg (b31)');
-figure, imshow(qns_b40), title('QNS för IMCDP (b40)');
 
 imwrite(qns_b11, 'qns_b11.tif', 'Resolution', 150);
 imwrite(qns_b31, 'qns_b31.tif', 'Resolution', 150);

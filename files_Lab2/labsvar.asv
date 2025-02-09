@@ -76,13 +76,13 @@ imwrite(b13, 'b13.tif', 'Resolution', 150);
 tr_linjeraster = [  1  2  3  4;
                     5  6  7  8;
                     9 10 11 12;
-                   13 14 15 16] / 16; % Normerad till [0,1]
+                   13 14 15 16] / 17; % Normerad till [0,1]
 
 % Spiralraster innebär att tröskelvärdena följer en spiralformad ordning:
 tr_spiralraster = [  6  7  8  9;
                       5  1  2 10;
                       4 12  3 11;
-                     16 15 14 13] / 16; % Normerad till [0,1]
+                     16 15 14 13] / 17; % Normerad till [0,1]
 
 % Rastera bilden med de nya tröskelmatriserna
 b14_linjeraster = troskel(I, tr_linjeraster);
@@ -114,18 +114,22 @@ imwrite(b14_spiralraster, 'b14_spiralraster.tif', 'Resolution', 150);
 % Genom att räkna antalet unika tröskelvärden och addera ett får man det totala antalet grånivåer som matrisen kan återge. 
 % Ju fler unika värden tröskelmatrisen har, desto fler nyanser av grått kan rasterbilden återge, vilket påverkar bildens detaljrikedom och tonalitet.
 
-% 2.1 ---------------------------------------------------------------------
+%% 2.1 ---------------------------------------------------------------------
 
-% bilden I har laddats in högre upp
+I = imread('kvarn.tif'); % Läs in bilden
+I = double(I) / 255; % Normera bilden till intervallet [0,1]
 
 b21 = tabellrast(I);
 figure, imshow(b21), title('Tabellrastrering med tabellrast');
 imwrite(b21, 'b21.tif', 'Resolution', 150);
 
 num_gray_levels = numel(unique(b21));
-disp(['Tabellrastreringen representerar ', num2str(num_gray_levels), ' grånivåer.']);
+disp(['Tabellrastreringen b21 representerar ', num2str(num_gray_levels), ' grånivåer.']);
 
-% 2.2 ------------------------------------------------------------------
+%% 2.2 ------------------------------------------------------------------
+
+I = imread('kvarn.tif'); % Läs in bilden
+I = double(I) / 255; % Normera bilden till intervallet [0,1]
 
 b22 = tabellrast2(I);
 figure, imshow(b22), title('Tabellrastrering med tabellrast2');
@@ -154,7 +158,7 @@ imwrite(b24, 'b24.tif', 'Resolution', 150);
 
 % kolla grånivåer ( 16 olika?? ) 
 num_gray_levels = numel(unique(b24));
-disp(['Tabellrastreringen b4 representerar  ', num2str(num_gray_levels), ' grånivåer.']);
+disp(['Tabellrastreringen b24 representerar  ', num2str(num_gray_levels), ' grånivåer.']);
 
 % Hur stor blir den nya bilden? (dubbelt)
 [orig_height, orig_width] = size(I);
@@ -204,10 +208,14 @@ imwrite(b32, 'b32.tif', 'Resolution', 150);
 % Sammanfattningsvis är b31 skarpare men kan ha mer synliga störningar i jämna ytor, 
 % medan b32 har en mjukare tonövergång och färre artefakter, men kan verka något suddigare.
 
-% 3.4 -------------------------------------------------------------------
+%% 3.4 -------------------------------------------------------------------
+I = imread('kvarn.tif'); % Läs in originalbilden
+I = double(I) / 255; % Normera pixelvärden till [0,1]
 
-filter1 = [0 1]; % Felet sprids endast åt höger
-filter2 = [0 0.5; 0.5 0]; % Felet sprids åt höger och nedåt
+% ( denna inte helt fungerande ännu)
+
+filter1 = [0 0 1; 0 0 0]; % Felet sprids endast åt höger
+filter2 = [0 0 0.5; 0.5 0 0]; % Felet sprids åt höger och nedåt
 
 b34_1 = errordif(I, filter1); % Rastrering med filter 1
 b34_2 = errordif(I, filter2); % Rastrering med filter 2
@@ -232,8 +240,10 @@ imwrite(b34_2, 'b34_2.tif', 'Resolution', 150);
 % Syns mest i skuggor och högdagrar, där övergångar i bildens ljusare eller mörkare områden blir mer distinkta än de borde vara.
 % Eftersom dithering fördelar felet, kan det leda till att vissa områden samlar för mycket av en viss ton, vilket skapar tydliga steg (band) istället för mjuka övergångar.
 
-% 3.6 ----------------------------------------------------------
+%% 3.6 ----------------------------------------------------------
 
+I = imread('kvarn.tif'); % Läs in originalbilden
+I = double(I) / 255; % Normera pixelvärden till [0,1]
 
 k = 0.1; % Justerbar brusnivå (experimentera med olika värden mellan 0 och 1)
 brus = (rand(size(I)) - 0.5) * k; % Genererar brus i intervallet [-k/2, k/2]
@@ -251,17 +261,13 @@ imwrite(b36, 'b36.tif', 'Resolution', 150);
 % Om k ≈ 1, blir ditheringen mycket brusig och förlorar kvalitet.
 % En bra balans brukar hittas runt k = 0.05 till 0.2 beroende på bilden
 
-% 4.0 -----------------------------------------------
+%% 4.0 -----------------------------------------------
+
+I = imread('kvarn.tif'); % Läs in originalbilden
+I = double(I) / 255; % Normera pixelvärden till [0,1]
 
 b40 = imcdp(I);
-figure, imshow(b40), title('IMCDP-rastrering');
 imwrite(b40, 'b40.tif', 'Resolution', 150);
-
-% jämföörelse mellan b40 och b31
-figure;
-subplot(1,2,1), imshow(b31), title('Floyd-Steinberg (b31)');
-subplot(1,2,2), imshow(b40), title('IMCDP (b40)');
-
 
 % Skärpa
 % IMCDP (b40) bevarar skarpare detaljer och har en mer kontrollerad placering av rasterpunkter.
@@ -275,6 +281,72 @@ subplot(1,2,2), imshow(b40), title('IMCDP (b40)');
 % IMCDP (b40) kontrollerar punktplaceringen iterativt, vilket gör att övergångarna i bilden blir jämnare.
 % Floyd-Steinberg (b31) kan ibland ge ett mer slumpmässigt brus i mellantoner
 
-% 
+%% 5.1 -------------------------------------------------------------------
+
+I = imread('kvarn.tif'); % Läs in originalbilden
+I = double(I) / 255; % Normera pixelvärden till [0,1]
+
+b11 = imread('b11.tif'); % Enkel tröskling
+b31 = imread('b31.tif'); % Floyd-Steinberg
+b40 = imread('b40.tif'); % IMCDP
+
+b11 = double(b11) / 255;
+b31 = double(b31) / 255;
+b40 = double(b40) / 255;
+
+noise_b11 = I - b11;
+noise_b31 = I - b31;
+noise_b40 = I - b40;
+
+snr_b11 = mysnr(I, noise_b11);
+snr_b31 = mysnr(I, noise_b31);
+snr_b40 = mysnr(I, noise_b40);
+
+
+
+%% 5.2 ------------------------------------------------
+
+I = imread('kvarn.tif'); % Läs in originalbilden
+I = double(I) / 255; % Normera pixelvärden till [0,1]
+
+b11 = imread('b11.tif'); % Enkel tröskling
+b31 = imread('b31.tif'); % Floyd-Steinberg
+b40 = imread('b40.tif'); % IMCDP
+
+b11 = double(b11) / 255;
+b31 = double(b31) / 255;
+b40 = double(b40) / 255;
+
+noise_b11 = I - b11;
+noise_b31 = I - b31;
+noise_b40 = I - b40;
+
+snr_b11_filtered = snr_filter(I, noise_b11);
+snr_b31_filtered = snr_filter(I, noise_b31);
+snr_b40_filtered = snr_filter(I, noise_b40);
+
+
+%% 5.3 ----------------------------------------------------
+
+I = imread('kvarn.tif'); % Läs in originalbilden
+I = double(I) / 255; % Normera pixelvärden till [0,1]
+
+b11 = imread('b11.tif'); % Enkel tröskling
+b31 = imread('b31.tif'); % Floyd-Steinberg
+b40 = imread('b40.tif'); % IMCDP
+
+b11 = double(b11) / 255;
+b31 = double(b31) / 255;
+b40 = double(b40) / 255;
+
+qns_b11 = QNS(I, b11);
+qns_b31 = QNS(I, b31);
+qns_b40 = QNS(I, b40);
+
+imwrite(qns_b11, 'qns_b11.tif', 'Resolution', 150);
+imwrite(qns_b31, 'qns_b31.tif', 'Resolution', 150);
+imwrite(qns_b40, 'qns_b40.tif', 'Resolution', 150);
+
+
 
 
