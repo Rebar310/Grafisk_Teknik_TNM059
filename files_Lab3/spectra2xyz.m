@@ -69,6 +69,7 @@ load spectra %this will give you all the data you need to write the code.
 
 % Beräkna normaliseringsfaktorn k
 % Enligt ekvation 1.4 i teoridokumentet
+
 k = 100 / sum(illumination .* xyz(:,2));
 
 % Beräkna tristimulusvärdena
@@ -77,6 +78,9 @@ k = 100 / sum(illumination .* xyz(:,2));
 X= k * sum(illumination .* reflectance .* xyz(:,1)); % this gives the X-tristimulus value
 Y= k * sum(illumination .* reflectance .* xyz(:,2)); % this gives the Y-tristimulus value
 Z= k * sum(illumination .* reflectance .* xyz(:,3)); % this gives the Z-tristimulus value
+
+% Se till att funktionen returnerar en 1x3-vektor
+X = [X, Y, Z]; % Detta säkerställer att MATLAB tolkar resultatet som en vektor
 
 %% Test your code
 % Test your code in assignment 1.1 in the third part of this lab and make sure that it works as it should

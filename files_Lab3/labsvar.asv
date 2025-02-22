@@ -292,4 +292,237 @@ disp(fractional_coverage_test2);
 % När färgerna överlappar på ett förutsägbart sätt vid samma vinkel, 
 % blir modellen ogiltig och kan inte korrekt beskriva fraktionell täckning.
 
-%% 4.1
+%% 4.1 
+
+% Ladda RGB-bild (om den inte redan är inläst)
+[R, G, B] = tiffread('Butterfly.tif'); % Exempelbild
+
+% Konvertera RGB till CMYK
+[C, M, Y, K] = rgb2cmyk(R, G, B);
+
+% Visa CMYK-kanalerna i separata figurer
+figure(1);
+imshow(C);
+title('Cyan kanal');
+
+figure(2);
+imshow(M);
+title('Magenta kanal');
+
+figure(3);
+imshow(Y);
+title('Yellow kanal');
+
+figure(4);
+imshow(K);
+title('Black kanal');
+
+% Teori svaret:
+
+% CMYK-bilderna verkar inverterade eftersom tryckprocessen fungerar subtraktivt. 
+% Ljusa områden i en RGB-bild kräver mindre bläck och blir mörka i CMYK-kanalerna, 
+% medan mörka områden kräver mer bläck och blir ljusa i CMYK-kanalerna.
+% I K-kanalen (svart) betyder en ljus pixel att lite svart bläck trycks, 
+% medan en mörk pixel betyder att mer svart bläck appliceras. 
+% Samma gäller för Cyan, Magenta och Yellow.
+
+%% 4.2
+
+% Ladda RGB-bilden (om den inte redan är inläst)
+[R, G, B] = tiffread('Butterfly.tif'); % Exempelbild
+
+% Konvertera RGB till CIELAB
+[L, a, b] = myrgb2lab(R, G, B);
+
+% Öka ljusstyrkan med 20 enheter
+[R2, G2, B2] = mylab2rgb(L + 20, a, b);
+
+% Minska ljusstyrkan med 20 enheter
+[R3, G3, B3] = mylab2rgb(L - 20, a, b);
+
+% Visa den ljusare bilden
+figure;
+imshowrgb(R2, G2, B2);
+title('Ökad ljusstyrka (+20 i L)');
+saveas(gcf, 'increased_lightness.png');
+
+
+% Visa den mörkare bilden
+figure;
+imshowrgb(R3, G3, B3);
+title('Minskad ljusstyrka (-20 i L)');
+
+% Spara bilderna för att infoga i svarsdokumentet
+saveas(gcf, 'decreased_lightness.png');
+
+% Teori svar:
+% När L-värdet ökas, blir bilden ljusare, och när L-värdet minskas,blir bilden mörkare. 
+% Detta påverkar endast ljusstyrkan (lightness) utan att förändra kontrast, 
+% färgton (hue) eller mättnad (saturation).
+
+%% 4.3
+
+% Byt tecken på a*-värdena
+[R2, G2, B2] = mylab2rgb(L, -a, b);
+
+% Visa resultatet
+figure;
+imshowrgb(R2, G2, B2);
+title('Inverterade a*-värden (rött blir grönt, grönt blir rött)');
+
+% Spara bilden
+saveas(gcf, 'inverted_a_star.png');
+
+% Sätt alla a*-värden till 0
+[R3, G3, B3] = mylab2rgb(L, 0, b);
+
+% Visa resultatet
+figure;
+imshowrgb(R3, G3, B3);
+title('a* = 0 (ingen röd-grön färginformation)');
+
+% Spara bilden
+saveas(gcf, 'zero_a_star.png');
+
+% Teori svar: 
+% När vi inverterar a-värdet, förändras färgens hue (kulör), 
+% där rött blir grönt och grönt blir rött. 
+% Detta ändrar inte ljusstyrka eller kontrast.*
+% När vi sätter a till 0, försvinner all röd-grön-information, 
+% vilket gör att bilden endast består av blå-gula toner. 
+% Även här påverkas endast hue, inte ljusstyrka eller mättnad.*
+
+%% 4.4
+
+% Ladda RGB-bilden (om den inte redan är inläst)
+[R, G, B] = tiffread('Butterfly.tif'); % Exempelbild
+
+% Konvertera till CIELAB
+[L, a, b] = myrgb2lab(R, G, B);
+
+% Minska a* och b* värdena (lägre färgmättnad)
+[R2, G2, B2] = mylab2rgb(L, 0.5 * a, 0.5 * b);
+
+% Öka a* och b* värdena (högre färgmättnad)
+[R3, G3, B3] = mylab2rgb(L, 3 * a, 3 * b);
+
+% Visa bilderna
+figure;
+imshowrgb(R2, G2, B2);
+title('Skalning av a* och b* med 0.5 (lägre mättnad)');
+saveas(gcf, 'lagre_mattnad.png');
+
+figure;
+imshowrgb(R3, G3, B3);
+title('Skalning av a* och b* med 3 (högre mättnad)');
+saveas(gcf, 'högre_mattnad.png');
+
+% Teori :
+
+% Den färgegenskap som påverkas är mättnad (saturation).
+% När vi minskar a och b** (skalar med 0.5) minskar mättnaden, 
+% vilket gör att bilden ser blekare och mer gråaktig ut.
+% När vi ökar a och b** (skalar med 3) ökar mättnaden, 
+% vilket gör att färgerna blir starkare och mer livliga.
+% Ljusstyrka (lightness) och kulör (hue) påverkas inte, eftersom endast färgens kromaticitet ändras.
+
+
+%% 5.1
+
+% Ladda spektrala data
+load('spectra.mat'); 
+
+% Sätt reflektansen till 1 (ideal vit yta)
+R = ones(size(wavelength));
+
+% Beräkna XYZ-vitpunkten för varje ljuskälla
+XYZ_D65 = spectra2xyz(R, CIED65);
+XYZ_Tungsten = spectra2xyz(R, Tungsten60W);
+XYZ_Plank90K = spectra2xyz(R, plank90K);
+
+% Se till att XYZ är i rätt format (radvektor 1x3)
+if size(XYZ_D65,2) == 1
+    XYZ_D65 = XYZ_D65';
+    XYZ_Tungsten = XYZ_Tungsten';
+    XYZ_Plank90K = XYZ_Plank90K';
+end
+
+% Konvertera XYZ till RGB
+[R_D65, G_D65, B_D65] = myxyz2rgb(XYZ_D65(1), XYZ_D65(2), XYZ_D65(3));
+[R_Tungsten, G_Tungsten, B_Tungsten] = myxyz2rgb(XYZ_Tungsten(1), XYZ_Tungsten(2), XYZ_Tungsten(3));
+[R_Plank90K, G_Plank90K, B_Plank90K] = myxyz2rgb(XYZ_Plank90K(1), XYZ_Plank90K(2), XYZ_Plank90K(3));
+
+% Skapa en RGB-matris för att visa färgerna
+RGB_values = [
+    R_D65, G_D65, B_D65;        % D65 (dagsljus)
+    R_Tungsten, G_Tungsten, B_Tungsten;  % Tungsten 60W (glödlampa)
+    R_Plank90K, G_Plank90K, B_Plank90K   % Plank90K (hög temperatur ljuskälla)
+];
+
+% Visa färgerna
+showRGB(RGB_values);
+title('Färger för CIED65, Tungsten60W och Plank90K');
+
+% Spara figuren för svarsdokumentet
+saveas(gcf, 'light_sources.png');
+
+%% 5.2 
+
+% Ladda spektrala data
+load('spectra.mat'); 
+
+% Visa de 20 objekten under de tre ljuskällorna
+showRGB_20;
+
+%% 5.3
+
+% Plot the color differences (ΔE76) for the 20 objects under different illuminations
+plot_deltaE;
+
+% Teori:
+
+% The color differences (ΔE76) between the objects under Tungsten60W and Plank90K are 
+% larger than those under the other two pairs of light sources because these two light sources 
+% have the most different spectral distributions.
+% Tungsten60W emits mostly warm, red-yellow light, while Plank90K emits more blue light. 
+% This results in the same object appearing significantly different under these two illuminations, 
+% leading to the largest color differences in the plot.
+% CIED65 (daylight) has a more balanced spectrum, 
+% so the color differences between objects under CIED65 and the other two light sources are generally smaller.
+
+
+
+%% 5.4
+
+% Plot the CIEXYZ values for the light sources and objects under them
+plot_XYZ;
+
+% This will generate a 3D plot showing:
+
+% White points of the light sources as circles:
+% Black circle (o) → CIED65
+% Red circle (o) → Tungsten60W
+% Blue circle (o) → Plank90K
+
+% The twenty objects under different light sources:
+% Black (x) → Under CIED65
+% Red (*) → Under Tungsten60W
+% Blue (+) → Under Plank90K
+
+% Teori:
+% The Y-value for all light sources in the CIEXYZ space is 100.
+% This is because the Y-component represents luminance, and it is normalized to 100
+% for a perfectly reflecting white surface under any standard illuminant.
+% This normalization ensures that brightness remains consistent regardless of the light source.
+
+%% 5.5
+
+% Plot CIEXYZ values for the objects under different illuminations
+plot_XYZ;
+
+% Teori: Yes, when the illumination changes, the twenty objects move to completely different positions in the CIEXYZ space.
+% This happens because CIEXYZ values are directly influenced by the spectral distribution of the light source.
+% Since different illuminants have different spectral compositions, the way objects reflect light changes, resulting in different XYZ coordinates for the same object under different lighting conditions.
+% This shows that CIEXYZ is not perceptually uniform and makes it difficult to compare colors under varying illuminations.
+
+%% 5.6
