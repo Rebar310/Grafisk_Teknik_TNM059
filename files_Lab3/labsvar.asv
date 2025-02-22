@@ -292,7 +292,4 @@ disp(fractional_coverage_test2);
 % När färgerna överlappar på ett förutsägbart sätt vid samma vinkel, 
 % blir modellen ogiltig och kan inte korrekt beskriva fraktionell täckning.
 
-%% 4.1 
-
-
-
+%% 4.1
